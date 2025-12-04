@@ -1,0 +1,34 @@
+basePath: /
+info:
+  contact: {}
+  description: This is a sample server API.
+  title: APP Ecommerce API
+  version: "1.0"
+paths:
+  /api/todo/ping:
+    get:
+      consumes:
+      - application/json
+      description: todo ping
+      operationId: TodoPing
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: todo ping
+      tags:
+      - todo
+schemes:
+- https
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"
