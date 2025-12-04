@@ -32,15 +32,15 @@ func registerPublicHandlers(root fiber.Router) {
 	handlers := web.HandlerRegistrator{}
 	handlers.Register(
 		handler.NewTodo(),
+		handler.NewSwaggerHandler(),
+		handler.NewAuthHandler(),
 	)
 	handlers.Init(root)
 }
 
 func registerPrivateHandlers(root fiber.Router) {
 	handlers := web.HandlerRegistrator{}
-	handlers.Register(
-		handler.NewSwaggerHandler(),
-	)
+	handlers.Register()
 	handlers.Init(root)
 }
 

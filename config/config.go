@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -16,8 +17,9 @@ var config *Config
 var once sync.Once
 
 type Config struct {
-	IsDebug bool
-	Web     WebConfig
+	IsDebug    bool
+	Web        WebConfig
+	PostgresDB PostgresDBConfig
 }
 
 type WebConfig struct {
@@ -35,6 +37,13 @@ type WebConfig struct {
 	HTTPOnly                bool
 	Secure                  bool // set true in production (HTTPS)
 	SameSite                string
+}
+
+type PostgresDBConfig struct {
+	ConnectionString   string
+	MaxOpenConn        int
+	MaxIdleConn        int
+	ConnMaxLifeTimeTTL *time.Duration
 }
 
 func GetConfig() *Config {
@@ -57,6 +66,12 @@ func GetConfig() *Config {
 				HTTPOnly:                getEnvBool("COOKIE_HTTPONLY", true),
 				Secure:                  getEnvBool("COOKIE_SECURE", false),
 				SameSite:                getEnvString("COOKIE_SAMESITE", "Lax"),
+			},
+			PostgresDB: PostgresDBConfig{
+				ConnectionString:   getEnvString("POSTGRES_CONNECTION_STRING", ""),
+				MaxOpenConn:        getEnvInt("POSTGRES_MAX_OPEN_CONN", 0),
+				MaxIdleConn:        getEnvInt("POSTGRES_MAX_IDLE_CONN", 0),
+				ConnMaxLifeTimeTTL: getEnvDurationFromSecondsNullable("POSTGRES_CONN_MAX_LIFE_TIME_SECONDS", 0),
 			},
 		}
 	})
@@ -164,4 +179,25 @@ func joinPath(baseurl string, paths ...string) string {
 		return ""
 	}
 	return combined
+}
+
+//lint:ignore U1000 Ignore unused code, it may require in the future
+func getEnvDurationFromSecondsNullable(key string, defaultValue time.Duration) *time.Duration {
+	value := os.Getenv(key)
+	if value == "" {
+		if defaultValue == 0 {
+			return nil
+		} else {
+			return &defaultValue
+		}
+	}
+
+	intValue, err := strconv.ParseInt(value, 10, 64)
+
+	if err != nil {
+		return &defaultValue
+	}
+
+	result := time.Duration(intValue) * time.Second
+	return &result
 }

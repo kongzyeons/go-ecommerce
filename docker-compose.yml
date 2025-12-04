@@ -1,0 +1,49 @@
+version: '3.9'
+services: 
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports: 
+      - 6379:6379
+    # volumes: 
+    #   - ./data/redis:/data
+    #   - ./config/redis.conf:/redis.conf
+    # command: redis-server /redis.conf
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecomerce_db
+    ports:
+      - "5432:5432"
+    volumes:
+       - ./sql-script:/docker-entrypoint-initdb.d
+    #   - pg_data:/var/lib/postgresql/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

@@ -1,10 +1,51 @@
 basePath: /
+definitions:
+  data.AuthRegisterReq:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      password:
+        maxLength: 255
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
 info:
   contact: {}
   description: This is a sample server API.
   title: APP Ecommerce API
   version: "1.0"
 paths:
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: auth register
+      operationId: AuthRegister
+      parameters:
+      - description: request body
+        in: body
+        name: AuthRegisterReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.AuthRegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: auth register
+      tags:
+      - auth
   /api/todo/ping:
     get:
       consumes:

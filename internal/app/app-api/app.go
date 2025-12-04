@@ -3,6 +3,7 @@ package appapi
 import (
 	"app-ecommerce/config"
 	"app-ecommerce/internal/app/app-api/route"
+	"app-ecommerce/pkg/db"
 	"fmt"
 	"log"
 )
@@ -17,6 +18,7 @@ import (
 // @name X-API-Key
 func Run() {
 	defer func() {
+		db.UnInitDatabase()
 	}()
 
 	Init()
@@ -27,5 +29,9 @@ func Run() {
 }
 
 func Init() {
-	config.GetConfig()
+	cfg := config.GetConfig()
+
+	// init db
+	db.InitDatabase(cfg.PostgresDB.ConnectionString)
+
 }

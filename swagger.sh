@@ -1,0 +1,1 @@
+swag init -g internal/app/app-api/app.go -o internal/app/app-api/docs
