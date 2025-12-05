@@ -4,6 +4,8 @@ import (
 	"app-ecommerce/config"
 	"app-ecommerce/internal/app/app-api/route"
 	"app-ecommerce/pkg/db"
+	redis_db "app-ecommerce/pkg/redis"
+	"app-ecommerce/pkg/session"
 	"fmt"
 	"log"
 )
@@ -15,10 +17,11 @@ import (
 // @schemes https http
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
-// @name X-API-Key
+// @name Authorization
 func Run() {
 	defer func() {
 		db.UnInitDatabase()
+		redis_db.Uninit()
 	}()
 
 	Init()
@@ -34,4 +37,14 @@ func Init() {
 	// init db
 	db.InitDatabase(cfg.PostgresDB.ConnectionString)
 
+	// init redis
+	redis_db.Init(
+		cfg.Redis.Hosts,
+		cfg.Redis.Password,
+		cfg.Redis.UseCluster,
+		cfg.Redis.UseTLS,
+	)
+
+	// init session storage
+	session.InitSessionStorage()
 }

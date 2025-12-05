@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  data.AuthLoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 255
+        type: string
+    required:
+    - email
+    - password
+    type: object
   data.AuthRegisterReq:
     properties:
       email:
@@ -17,12 +28,126 @@ definitions:
     - name
     - password
     type: object
+  data.AuthUserInfo:
+    properties:
+      email:
+        type: string
+      lastPing:
+        type: integer
+      role:
+        type: string
+      userID:
+        type: integer
+      userName:
+        type: string
+    type: object
+  data.ProductGetListReq:
+    properties:
+      page:
+        example: 1
+        minimum: 1
+        type: integer
+      perPage:
+        example: 10
+        minimum: 1
+        type: integer
+      searchText:
+        example: ""
+        maxLength: 255
+        type: string
+      sortBy:
+        properties:
+          field:
+            example: id
+            type: string
+          mode:
+            example: asc
+            type: string
+        type: object
+    type: object
+  data.ProductGetListRes:
+    properties:
+      page:
+        type: integer
+      perPage:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/data.ProductGetListResult'
+        type: array
+      totalPages:
+        type: integer
+      totalResults:
+        type: integer
+    type: object
+  data.ProductGetListResult:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+    type: object
 info:
   contact: {}
   description: This is a sample server API.
   title: APP Ecommerce API
   version: "1.0"
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: auth login
+      operationId: AuthLogin
+      parameters:
+      - description: request body
+        in: body
+        name: AuthLoginReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.AuthLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: auth login
+      tags:
+      - auth
+  /api/auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: auth logout
+      operationId: AuthLogout
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: auth logout
+      tags:
+      - auth
+  /api/auth/refresh:
+    get:
+      consumes:
+      - application/json
+      description: auth refresh
+      operationId: AuthRefresh
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: auth refresh
+      tags:
+      - auth
   /api/auth/register:
     post:
       consumes:
@@ -46,6 +171,49 @@ paths:
       summary: auth register
       tags:
       - auth
+  /api/auth/user-info:
+    get:
+      consumes:
+      - application/json
+      description: auth user info
+      operationId: AuthUserInfo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.AuthUserInfo'
+      security:
+      - ApiKeyAuth: []
+      summary: auth user info
+      tags:
+      - auth
+  /api/products:
+    post:
+      consumes:
+      - application/json
+      description: product get list
+      operationId: ProductGetList
+      parameters:
+      - description: request body
+        in: body
+        name: ProductGetListReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.ProductGetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.ProductGetListRes'
+      security:
+      - ApiKeyAuth: []
+      summary: product get list
+      tags:
+      - product
   /api/todo/ping:
     get:
       consumes:
@@ -70,6 +238,6 @@ schemes:
 securityDefinitions:
   ApiKeyAuth:
     in: header
-    name: X-API-Key
+    name: Authorization
     type: apiKey
 swagger: "2.0"

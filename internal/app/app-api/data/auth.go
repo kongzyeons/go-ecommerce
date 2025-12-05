@@ -7,13 +7,21 @@ import (
 	"time"
 )
 
+type AuthUserInfo struct {
+	UserID   int64  `json:"userID"`
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	LastPing int64  `json:"lastPing"`
+}
+
 type AuthRegisterReq struct {
 	Name     string `json:"name" validate:"required,min=1,max=255"`
 	Email    string `json:"email" validate:"required,email,max=255"`
 	Password string `json:"password" validate:"required,max=255"`
 }
 
-func (obj *AuthRegisterReq) ToReq() AuthRegisterReq {
+func (obj *AuthRegisterReq) CleanReq() AuthRegisterReq {
 	obj.Name = strings.TrimSpace(obj.Name)
 	obj.Email = strings.TrimSpace(obj.Email)
 	obj.Password = strings.TrimSpace(obj.Password)
@@ -35,13 +43,16 @@ func (obj *AuthRegisterReq) ToUserModel() model.User {
 
 type AuthLoginReq struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8,max=255"`
+	Password string `json:"password" validate:"required,max=255"`
 }
 
-type AuthLoginRes struct {
-	AccToken string `json:"acc_token"`
+func (obj *AuthLoginReq) ToReq() AuthLoginReq {
+	obj.Email = strings.TrimSpace(obj.Email)
+	obj.Password = strings.TrimSpace(obj.Password)
+	return *obj
 }
 
 type AuthRefreshTokenRes struct {
-	AccToken string `json:"acc_token"`
+	AccToken string `json:"accToken"`
+	RefToken string `json:"refToken"`
 }

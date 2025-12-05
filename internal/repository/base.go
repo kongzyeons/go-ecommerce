@@ -6,7 +6,8 @@ import (
 )
 
 type Repo struct {
-	UserRepo UserRepo
+	UserRepo    UserRepo
+	ProductRepo ProductRepo
 }
 
 var repoInstance Repo
@@ -16,7 +17,8 @@ func NewRpo() Repo {
 	repoOnce.Do(func() {
 		pg := db.NewPostgresqlDb()
 		repoInstance = Repo{
-			UserRepo: NewUserRepo(pg),
+			UserRepo:    NewUserRepo(pg),
+			ProductRepo: NewProductRepo(pg),
 		}
 	})
 	return repoInstance

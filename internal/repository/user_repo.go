@@ -3,6 +3,8 @@ package repository
 import (
 	"app-ecommerce/internal/model"
 	"app-ecommerce/pkg/db"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -10,6 +12,7 @@ import (
 type UserRepo interface {
 	Insert(tx db.TX, req model.User) (id int64, err error)
 	GetCountUnique(req model.User) (count int, err error)
+	GetInfo(req model.User) (*model.UserRole, error)
 }
 
 type userRepo struct {
@@ -71,15 +74,15 @@ func (repo *userRepo) GetCountUnique(req model.User) (count int, err error) {
 
 	condition := `WHERE TRUE`
 
-	condtionWithoutID := ""
+	conditionWithoutID := ""
 	if req.ID > 0 {
-		condtionWithoutID = `AND (id != ?)`
+		conditionWithoutID = `AND (id != ?)`
 		params = append(params, req.ID)
 	}
 
-	condtionName := ""
+	conditionName := ""
 	if req.Name != "" {
-		condtionName = `AND (name = ?)`
+		conditionName = `AND (name = ?)`
 		params = append(params, req.Name)
 	}
 
@@ -89,7 +92,7 @@ func (repo *userRepo) GetCountUnique(req model.User) (count int, err error) {
 		params = append(params, req.Email)
 	}
 
-	condition = fmt.Sprintf("%s %s %s %s", condition, condtionWithoutID, condtionName, conditionEmail)
+	condition = fmt.Sprintf("%s %s %s %s", condition, conditionWithoutID, conditionName, conditionEmail)
 
 	query := repo.pg.Rebind(fmt.Sprintf("%s %s %s;", sl, from, condition))
 
@@ -100,4 +103,58 @@ func (repo *userRepo) GetCountUnique(req model.User) (count int, err error) {
 	}
 
 	return count, nil
+}
+
+func (repo *userRepo) GetInfo(req model.User) (*model.UserRole, error) {
+	var params []interface{}
+
+	sl := `SELECT
+		u.id,
+		u.name,
+		u.email,
+		u.password,
+		u.role_id,
+		r.name as role_name
+	`
+
+	from := `FROM users u`
+
+	join := `JOIN roles r ON u.role_id = r.id`
+
+	condition := `WHERE u.is_deleted = FALSE`
+
+	conditionID := ""
+	if req.ID > 0 {
+		conditionID = `AND (u.id = ?)`
+		params = append(params, req.ID)
+	}
+
+	conditionName := ""
+	if req.Name != "" {
+		conditionName = `AND (u.name = ?)`
+		params = append(params, req.Name)
+	}
+
+	conditionEmail := ""
+	if req.Email != "" {
+		conditionEmail = `AND (u.email = ?)`
+		params = append(params, req.Email)
+	}
+
+	condition = fmt.Sprintf("%s %s %s %s", condition, conditionID, conditionName, conditionEmail)
+
+	query := repo.pg.Rebind(fmt.Sprintf("%s %s %s %s;", sl, from, join, condition))
+
+	var res model.UserRole
+	err := repo.pg.Get(&res, query, params...)
+	if db.IsSQLReallyError(err) {
+		log.Println("SQL select failed.", err)
+		return nil, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	return &res, nil
 }

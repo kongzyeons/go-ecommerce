@@ -6,6 +6,7 @@ services:
     restart: always
     ports: 
       - 6379:6379
+    command: ["redis-server", "--requirepass", "password"]
     # volumes: 
     #   - ./data/redis:/data
     #   - ./config/redis.conf:/redis.conf

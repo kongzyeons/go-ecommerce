@@ -3,7 +3,7 @@ VALUES ('admin'),('user');
 
 -- Insert admin user
 INSERT INTO users (name,password,email,role_id ,created_by,modified_by)
-VALUES ('admin','$2y$10$QJeV8yEV9w5mDql922AgFOxRjB8FRT9KdMBDK7HwetbRIUvpTaBaK','admin@example.com',1,'admin','admin');
+VALUES ('admin','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','admin@example.com',1,'admin','admin');
 
 
 

@@ -18,8 +18,11 @@ var once sync.Once
 
 type Config struct {
 	IsDebug    bool
+	ServerMode string
 	Web        WebConfig
 	PostgresDB PostgresDBConfig
+	JwtKey     string
+	Redis      RedisConfig
 }
 
 type WebConfig struct {
@@ -46,11 +49,21 @@ type PostgresDBConfig struct {
 	ConnMaxLifeTimeTTL *time.Duration
 }
 
+type RedisConfig struct {
+	Hosts       []string
+	Password    string
+	UseCluster  bool
+	UseTLS      bool
+	SSESubPubDB int
+	CacheIndex  int
+}
+
 func GetConfig() *Config {
 	once.Do(func() {
 		GetConfigWithFilename(".env")
 		config = &Config{
-			IsDebug: getEnvBool("DEBUG", true),
+			ServerMode: getEnvString("SERVER_MODE", ""), // local,dev, staging, prod
+			IsDebug:    getEnvBool("DEBUG", true),
 			Web: WebConfig{
 				BasePath:                getEnvString("BASEPATH", ""),
 				PORT:                    getEnvString("PORT", "8080"),
@@ -72,6 +85,15 @@ func GetConfig() *Config {
 				MaxOpenConn:        getEnvInt("POSTGRES_MAX_OPEN_CONN", 0),
 				MaxIdleConn:        getEnvInt("POSTGRES_MAX_IDLE_CONN", 0),
 				ConnMaxLifeTimeTTL: getEnvDurationFromSecondsNullable("POSTGRES_CONN_MAX_LIFE_TIME_SECONDS", 0),
+			},
+			JwtKey: getEnvString("JWT_KEY", ""),
+			Redis: RedisConfig{
+				Hosts:       getEnvStringArray("REDIS_HOST", []string{}),
+				Password:    getEnvString("REDIS_PASSWORD", ""),
+				UseCluster:  getEnvBool("REDIS_USE_CLUSTER", false),
+				UseTLS:      getEnvBool("REDIS_USE_TLS", false),
+				SSESubPubDB: getEnvInt("REDIS_SSE_SUB_PUB_DB", 0),
+				CacheIndex:  getEnvInt("REDIS_CACHE_INDEX", 1),
 			},
 		}
 	})

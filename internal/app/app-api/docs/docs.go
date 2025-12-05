@@ -15,6 +15,87 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "auth login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "auth login",
+                "operationId": "AuthLogin",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "AuthLoginReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.AuthLoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "auth logout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "auth logout",
+                "operationId": "AuthLogout",
+                "responses": {}
+            }
+        },
+        "/api/auth/refresh": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "auth refresh",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "auth refresh",
+                "operationId": "AuthRefresh",
+                "responses": {}
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "security": [
@@ -52,6 +133,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/auth/user-info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "auth user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "auth user info",
+                "operationId": "AuthUserInfo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.AuthUserInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "product get list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "product get list",
+                "operationId": "ProductGetList",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "ProductGetListReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.ProductGetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.ProductGetListRes"
+                        }
+                    }
+                }
+            }
+        },
         "/api/todo/ping": {
             "get": {
                 "security": [
@@ -83,6 +233,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "data.AuthLoginReq": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "data.AuthRegisterReq": {
             "type": "object",
             "required": [
@@ -105,12 +271,105 @@ const docTemplate = `{
                     "maxLength": 255
                 }
             }
+        },
+        "data.AuthUserInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "lastPing": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.ProductGetListReq": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "perPage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 10
+                },
+                "searchText": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": ""
+                },
+                "sortBy": {
+                    "type": "object",
+                    "properties": {
+                        "field": {
+                            "type": "string",
+                            "example": "id"
+                        },
+                        "mode": {
+                            "type": "string",
+                            "example": "asc"
+                        }
+                    }
+                }
+            }
+        },
+        "data.ProductGetListRes": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data.ProductGetListResult"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalResults": {
+                    "type": "integer"
+                }
+            }
+        },
+        "data.ProductGetListResult": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
         }
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
             "type": "apiKey",
-            "name": "X-API-Key",
+            "name": "Authorization",
             "in": "header"
         }
     }
