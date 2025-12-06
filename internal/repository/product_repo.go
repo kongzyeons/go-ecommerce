@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/lib/pq"
 )
 
 type ProductRepo interface {
 	GetList(req data.ProductGetListReq) (res []model.Product, total int64, err error)
+	GetPriceByIDs(ids ...int64) (res []model.GetPriceByIDsRes, err error)
 }
 
 type productRepo struct {
@@ -89,4 +92,30 @@ func (repo *productRepo) GetList(req data.ProductGetListReq) (res []model.Produc
 	}
 
 	return res, total, nil
+}
+
+func (repo *productRepo) GetPriceByIDs(ids ...int64) (res []model.GetPriceByIDsRes, err error) {
+	withReq := `WITH req AS (
+	SELECT *
+	FROM UNNEST($1::bigint[])
+		AS t(id)
+	)`
+
+	sl := `SELECT 
+		products.id,
+		products.price
+	`
+
+	from := `FROM products`
+
+	join := `RIGHT JOIN req ON req.id = products.id`
+
+	query := repo.pg.Rebind(fmt.Sprintf(`%s %s %s %s;`, withReq, sl, from, join))
+
+	err = repo.pg.Select(&res, query, pq.Array(ids))
+	if db.IsSQLReallyError(err) {
+		return res, err
+	}
+
+	return res, nil
 }

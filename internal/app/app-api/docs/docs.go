@@ -162,6 +162,124 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/order/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "order create",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order create",
+                "operationId": "OrderCreate",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "OrderCreateReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderCreateRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/history": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "order get history",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order get history",
+                "operationId": "OrderGetHistory",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "OrderGetHistoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderGetHistoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderGetHistoryRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "orderdelete",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order delete",
+                "operationId": "OrderDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderDeleteRes"
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "post": {
                 "security": [
@@ -289,6 +407,183 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string"
+                }
+            }
+        },
+        "data.OrderCreateReq": {
+            "type": "object",
+            "required": [
+                "orderDetails"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "orderDetails": {
+                    "type": "array",
+                    "maxItems": 10,
+                    "items": {
+                        "$ref": "#/definitions/data.OrderDetail"
+                    }
+                }
+            }
+        },
+        "data.OrderCreateRes": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "string"
+                },
+                "createCount": {
+                    "type": "integer"
+                },
+                "createdDate": {
+                    "type": "string"
+                },
+                "createdID": {
+                    "type": "integer"
+                },
+                "deleteCount": {
+                    "type": "integer"
+                },
+                "updateCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "data.OrderDeleteRes": {
+            "type": "object",
+            "properties": {
+                "deletedBy": {
+                    "type": "string"
+                },
+                "deletedCount": {
+                    "type": "integer"
+                },
+                "deletedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.OrderDetail": {
+            "type": "object",
+            "required": [
+                "productID",
+                "quantity"
+            ],
+            "properties": {
+                "productID": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "data.OrderDetailResult": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "proudctName": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "subtotal": {
+                    "type": "number"
+                }
+            }
+        },
+        "data.OrderGetHistoryReq": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "perPage": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 10
+                },
+                "sortBy": {
+                    "type": "object",
+                    "properties": {
+                        "field": {
+                            "type": "string",
+                            "example": "modifiedDate"
+                        },
+                        "mode": {
+                            "type": "string",
+                            "example": "desc"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        },
+        "data.OrderGetHistoryRes": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data.OrderGetHistoryResult"
+                    }
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalResults": {
+                    "type": "integer"
+                }
+            }
+        },
+        "data.OrderGetHistoryResult": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "modifiedDate": {
+                    "type": "string"
+                },
+                "orderDetails": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data.OrderDetailResult"
+                    }
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                },
+                "userID": {
+                    "type": "integer"
                 }
             }
         },

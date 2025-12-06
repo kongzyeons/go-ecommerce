@@ -33,7 +33,7 @@ func (obj *AuthRegisterReq) ToUserModel() model.User {
 		Name:         obj.Name,
 		Email:        obj.Email,
 		Password:     obj.Password,
-		RoleID:       1,
+		RoleID:       2,
 		CreatedBy:    "admin",
 		CreatedDate:  time.Now().UTC(),
 		ModifiedBy:   "admin",

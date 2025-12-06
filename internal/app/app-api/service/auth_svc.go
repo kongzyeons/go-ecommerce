@@ -24,7 +24,7 @@ type authSvc struct {
 
 func NewAuthSvc() AuthSvc {
 	return &authSvc{
-		repo: repository.NewRpo(),
+		repo: repository.NewRepo(),
 		pg:   db.NewPostgresqlDb(),
 	}
 }

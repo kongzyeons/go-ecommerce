@@ -41,6 +41,124 @@ definitions:
       userName:
         type: string
     type: object
+  data.OrderCreateReq:
+    properties:
+      id:
+        type: integer
+      orderDetails:
+        items:
+          $ref: '#/definitions/data.OrderDetail'
+        maxItems: 10
+        type: array
+    required:
+    - orderDetails
+    type: object
+  data.OrderCreateRes:
+    properties:
+      createBy:
+        type: string
+      createCount:
+        type: integer
+      createdDate:
+        type: string
+      createdID:
+        type: integer
+      deleteCount:
+        type: integer
+      updateCount:
+        type: integer
+    type: object
+  data.OrderDeleteRes:
+    properties:
+      deletedBy:
+        type: string
+      deletedCount:
+        type: integer
+      deletedDate:
+        type: string
+    type: object
+  data.OrderDetail:
+    properties:
+      productID:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - productID
+    - quantity
+    type: object
+  data.OrderDetailResult:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      price:
+        type: number
+      proudctName:
+        type: string
+      quantity:
+        type: integer
+      subtotal:
+        type: number
+    type: object
+  data.OrderGetHistoryReq:
+    properties:
+      page:
+        example: 1
+        minimum: 1
+        type: integer
+      perPage:
+        example: 10
+        minimum: 1
+        type: integer
+      sortBy:
+        properties:
+          field:
+            example: modifiedDate
+            type: string
+          mode:
+            example: desc
+            type: string
+        type: object
+      status:
+        example: ""
+        type: string
+    type: object
+  data.OrderGetHistoryRes:
+    properties:
+      page:
+        type: integer
+      perPage:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/data.OrderGetHistoryResult'
+        type: array
+      totalPages:
+        type: integer
+      totalResults:
+        type: integer
+    type: object
+  data.OrderGetHistoryResult:
+    properties:
+      id:
+        type: integer
+      modifiedDate:
+        type: string
+      orderDetails:
+        items:
+          $ref: '#/definitions/data.OrderDetailResult'
+        type: array
+      reason:
+        type: string
+      status:
+        type: string
+      total:
+        type: number
+      userID:
+        type: integer
+    type: object
   data.ProductGetListReq:
     properties:
       page:
@@ -189,6 +307,80 @@ paths:
       summary: auth user info
       tags:
       - auth
+  /api/order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: orderdelete
+      operationId: OrderDelete
+      parameters:
+      - description: order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderDeleteRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order delete
+      tags:
+      - order
+  /api/order/create:
+    post:
+      consumes:
+      - application/json
+      description: order create
+      operationId: OrderCreate
+      parameters:
+      - description: request body
+        in: body
+        name: OrderCreateReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.OrderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderCreateRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order create
+      tags:
+      - order
+  /api/order/history:
+    post:
+      consumes:
+      - application/json
+      description: order get history
+      operationId: OrderGetHistory
+      parameters:
+      - description: request body
+        in: body
+        name: OrderGetHistoryReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.OrderGetHistoryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderGetHistoryRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order get history
+      tags:
+      - order
   /api/products:
     post:
       consumes:

@@ -23,7 +23,7 @@ type productSvc struct {
 
 func NewProductSvc() ProductSvc {
 	return &productSvc{
-		repo:    repository.NewRpo(),
+		repo:    repository.NewRepo(),
 		redisDB: redis_db.NewRedisDB(),
 	}
 }
