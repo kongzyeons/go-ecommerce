@@ -15,6 +15,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/order/history": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "admin order get history",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "admin order get history",
+                "operationId": "OrderGetHistoryAdmin",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "OrderGetHistoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderGetHistoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderGetHistoryRes"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "security": [
@@ -162,6 +202,129 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/order/cancel/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "orderCancel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order Cancel",
+                "operationId": "OrderCancel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "request body",
+                        "name": "OrderCancelReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderCancelReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderCancelRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/completed/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "orderCompleted",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order Completed",
+                "operationId": "OrderCompleted",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderCompletedRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order/confirm/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "orderConfirm",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order confirm",
+                "operationId": "OrderConfirm",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderConfirmRes"
+                        }
+                    }
+                }
+            }
+        },
         "/api/order/create": {
             "post": {
                 "security": [
@@ -242,6 +405,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/order/shipping/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "orderShipping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "order Shipping",
+                "operationId": "OrderShipping",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.OrderShippingRes"
+                        }
+                    }
+                }
+            }
+        },
         "/api/order/{id}": {
             "delete": {
                 "security": [
@@ -315,6 +516,34 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/data.ProductGetListRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sse": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "SSE Event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "SSE"
+                ],
+                "summary": "SSE Event",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -406,6 +635,51 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.OrderCancelReq": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "data.OrderCancelRes": {
+            "type": "object",
+            "properties": {
+                "modifiedBy": {
+                    "type": "string"
+                },
+                "modifiedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.OrderCompletedRes": {
+            "type": "object",
+            "properties": {
+                "modifiedBy": {
+                    "type": "string"
+                },
+                "modifiedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.OrderConfirmRes": {
+            "type": "object",
+            "properties": {
+                "modifiedBy": {
+                    "type": "string"
+                },
+                "modifiedDate": {
                     "type": "string"
                 }
             }
@@ -532,6 +806,10 @@ const docTemplate = `{
                 "status": {
                     "type": "string",
                     "example": ""
+                },
+                "userID": {
+                    "type": "integer",
+                    "example": 0
                 }
             }
         },
@@ -584,6 +862,17 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "integer"
+                }
+            }
+        },
+        "data.OrderShippingRes": {
+            "type": "object",
+            "properties": {
+                "modifiedBy": {
+                    "type": "string"
+                },
+                "modifiedDate": {
+                    "type": "string"
                 }
             }
         },

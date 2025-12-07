@@ -14,7 +14,7 @@ import (
 type OrderRepo interface {
 	Insert(tx db.TX, req model.Order) (id int64, err error)
 	GetByID(id int64) (res *model.Order, err error)
-	Updata(tx db.TX, req model.Order) (count int64, err error)
+	Update(tx db.TX, req model.Order) (count int64, err error)
 	GetHistory(req data.OrderGetHistoryReq) (res []model.OrderGetInfoRes, total int64, err error)
 	Delete(tx db.TX, id int64) (count int64, err error)
 }
@@ -92,7 +92,7 @@ func (repo *orderRepo) GetByID(id int64) (*model.Order, error) {
 
 }
 
-func (repo *orderRepo) Updata(tx db.TX, req model.Order) (count int64, err error) {
+func (repo *orderRepo) Update(tx db.TX, req model.Order) (count int64, err error) {
 	params := make([]interface{}, 6)
 	params[0] = req.Total
 	params[1] = req.Status
@@ -128,9 +128,7 @@ func (repo *orderRepo) Updata(tx db.TX, req model.Order) (count int64, err error
 }
 
 func (repo *orderRepo) GetHistory(req data.OrderGetHistoryReq) (res []model.OrderGetInfoRes, total int64, err error) {
-	params := []interface{}{
-		req.UserID,
-	}
+	params := []interface{}{}
 
 	sl := `SELECT 
 		o.id ,o.user_id ,
@@ -149,7 +147,13 @@ func (repo *orderRepo) GetHistory(req data.OrderGetHistoryReq) (res []model.Orde
 		LEFT JOIN products p ON od.product_id = p.id 
 	`
 
-	condition := `WHERE o.user_id = ?`
+	condition := `WHERE true`
+
+	conditionUserID := ""
+	if req.UserID > 0 {
+		conditionUserID = `AND (o.user_id = ?)`
+		params = append(params, req.UserID)
+	}
 
 	conditionStatus := ""
 	if req.Status != "" {
@@ -157,7 +161,7 @@ func (repo *orderRepo) GetHistory(req data.OrderGetHistoryReq) (res []model.Orde
 		params = append(params, req.Status)
 	}
 
-	condition = fmt.Sprintf("%s %s", condition, conditionStatus)
+	condition = fmt.Sprintf("%s %s %s", condition, conditionUserID, conditionStatus)
 
 	queryCount := repo.pg.Rebind(fmt.Sprintf(`SELECT COUNT(*) %s %s`, from, condition))
 

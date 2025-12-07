@@ -41,6 +41,35 @@ definitions:
       userName:
         type: string
     type: object
+  data.OrderCancelReq:
+    properties:
+      reason:
+        maxLength: 255
+        type: string
+    required:
+    - reason
+    type: object
+  data.OrderCancelRes:
+    properties:
+      modifiedBy:
+        type: string
+      modifiedDate:
+        type: string
+    type: object
+  data.OrderCompletedRes:
+    properties:
+      modifiedBy:
+        type: string
+      modifiedDate:
+        type: string
+    type: object
+  data.OrderConfirmRes:
+    properties:
+      modifiedBy:
+        type: string
+      modifiedDate:
+        type: string
+    type: object
   data.OrderCreateReq:
     properties:
       id:
@@ -124,6 +153,9 @@ definitions:
       status:
         example: ""
         type: string
+      userID:
+        example: 0
+        type: integer
     type: object
   data.OrderGetHistoryRes:
     properties:
@@ -158,6 +190,13 @@ definitions:
         type: number
       userID:
         type: integer
+    type: object
+  data.OrderShippingRes:
+    properties:
+      modifiedBy:
+        type: string
+      modifiedDate:
+        type: string
     type: object
   data.ProductGetListReq:
     properties:
@@ -215,6 +254,31 @@ info:
   title: APP Ecommerce API
   version: "1.0"
 paths:
+  /api/admin/order/history:
+    post:
+      consumes:
+      - application/json
+      description: admin order get history
+      operationId: OrderGetHistoryAdmin
+      parameters:
+      - description: request body
+        in: body
+        name: OrderGetHistoryReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.OrderGetHistoryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderGetHistoryRes'
+      security:
+      - ApiKeyAuth: []
+      summary: admin order get history
+      tags:
+      - order
   /api/auth/login:
     post:
       consumes:
@@ -331,6 +395,84 @@ paths:
       summary: order delete
       tags:
       - order
+  /api/order/cancel/{id}:
+    put:
+      consumes:
+      - application/json
+      description: orderCancel
+      operationId: OrderCancel
+      parameters:
+      - description: order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: request body
+        in: body
+        name: OrderCancelReq
+        required: true
+        schema:
+          $ref: '#/definitions/data.OrderCancelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderCancelRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order Cancel
+      tags:
+      - order
+  /api/order/completed/{id}:
+    put:
+      consumes:
+      - application/json
+      description: orderCompleted
+      operationId: OrderCompleted
+      parameters:
+      - description: order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderCompletedRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order Completed
+      tags:
+      - order
+  /api/order/confirm/{id}:
+    put:
+      consumes:
+      - application/json
+      description: orderConfirm
+      operationId: OrderConfirm
+      parameters:
+      - description: order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderConfirmRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order confirm
+      tags:
+      - order
   /api/order/create:
     post:
       consumes:
@@ -381,6 +523,30 @@ paths:
       summary: order get history
       tags:
       - order
+  /api/order/shipping/{id}:
+    put:
+      consumes:
+      - application/json
+      description: orderShipping
+      operationId: OrderShipping
+      parameters:
+      - description: order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.OrderShippingRes'
+      security:
+      - ApiKeyAuth: []
+      summary: order Shipping
+      tags:
+      - order
   /api/products:
     post:
       consumes:
@@ -406,6 +572,23 @@ paths:
       summary: product get list
       tags:
       - product
+  /api/sse:
+    get:
+      consumes:
+      - application/json
+      description: SSE Event
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: SSE Event
+      tags:
+      - SSE
   /api/todo/ping:
     get:
       consumes:

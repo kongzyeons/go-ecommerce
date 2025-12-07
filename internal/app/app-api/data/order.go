@@ -60,7 +60,7 @@ type OrderCreateRes struct {
 }
 
 type OrderGetHistoryReq struct {
-	UserID  int64  `json:"-" validate:"required"`
+	UserID  int64  `json:"userID" example:"0"`
 	Status  string `json:"status" example:""`
 	Page    int64  `json:"page" example:"1" validate:"gte=1"`
 	PerPage int64  `json:"perPage" example:"10" validate:"gte=1"`
@@ -100,6 +100,8 @@ func (obj *OrderGetHistoryReq) ToVal() map[string]string {
 		FieldType reflect.Kind
 	}
 	mapSort := map[string]field{
+		"id":           {"o.id", reflect.Int64},
+		"userID":       {"o.user_id", reflect.Int64},
 		"total":        {"o.total", reflect.Int64},
 		"status":       {"o.status", reflect.String},
 		"modifiedDate": {"o.modified_date", reflect.Int64},
@@ -209,9 +211,8 @@ type OrderConfirmReq struct {
 }
 
 type OrderConfirmRes struct {
-	ModifiedCount int64     `json:"modifiedCount"`
-	ModifiedBy    string    `json:"modifiedBy"`
-	ModifiedDate  time.Time `json:"modifiedDate"`
+	ModifiedBy   string    `json:"modifiedBy"`
+	ModifiedDate time.Time `json:"modifiedDate"`
 }
 
 type OrderShippingReq struct {
@@ -220,9 +221,8 @@ type OrderShippingReq struct {
 }
 
 type OrderShippingRes struct {
-	ModifiedCount int64     `json:"modifiedCount"`
-	ModifiedBy    string    `json:"modifiedBy"`
-	ModifiedDate  time.Time `json:"modifiedDate"`
+	ModifiedBy   string    `json:"modifiedBy"`
+	ModifiedDate time.Time `json:"modifiedDate"`
 }
 
 type OrderCompletedReq struct {
@@ -231,19 +231,17 @@ type OrderCompletedReq struct {
 }
 
 type OrderCompletedRes struct {
-	ModifiedCount int64     `json:"modifiedCount"`
-	ModifiedBy    string    `json:"modifiedBy"`
-	ModifiedDate  time.Time `json:"modifiedDate"`
+	ModifiedBy   string    `json:"modifiedBy"`
+	ModifiedDate time.Time `json:"modifiedDate"`
 }
 
 type OrderCancelReq struct {
-	ID         int64  `json:"id" validate:"required"`
+	ID         int64  `json:"-" validate:"required"`
 	Reason     string `json:"reason" validate:"required,max=255"`
 	ModifiedBy string `json:"-" validate:"required"`
 }
 
 type OrderCancelRes struct {
-	ModifiedCount int64     `json:"modifiedCount"`
-	ModifiedBy    string    `json:"modifiedBy"`
-	ModifiedDate  time.Time `json:"modifiedDate"`
+	ModifiedBy   string    `json:"modifiedBy"`
+	ModifiedDate time.Time `json:"modifiedDate"`
 }

@@ -23,6 +23,7 @@ type Config struct {
 	PostgresDB PostgresDBConfig
 	JwtKey     string
 	Redis      RedisConfig
+	Kafka      kafkaConfig
 }
 
 type WebConfig struct {
@@ -56,6 +57,11 @@ type RedisConfig struct {
 	UseTLS      bool
 	SSESubPubDB int
 	CacheIndex  int
+}
+
+type kafkaConfig struct {
+	Brokers []string
+	GroupID string
 }
 
 func GetConfig() *Config {
@@ -94,6 +100,10 @@ func GetConfig() *Config {
 				UseTLS:      getEnvBool("REDIS_USE_TLS", false),
 				SSESubPubDB: getEnvInt("REDIS_SSE_SUB_PUB_DB", 0),
 				CacheIndex:  getEnvInt("REDIS_CACHE_INDEX", 1),
+			},
+			Kafka: kafkaConfig{
+				Brokers: getEnvStringArray("KAFKA_BROKERS", []string{}),
+				GroupID: getEnvString("KAFKA_GROUP_ID", ""),
 			},
 		}
 	})

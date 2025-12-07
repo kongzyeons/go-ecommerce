@@ -4,6 +4,8 @@ import (
 	"app-ecommerce/config"
 	"app-ecommerce/internal/app/app-api/route"
 	"app-ecommerce/pkg/db"
+	"app-ecommerce/pkg/hub"
+	"app-ecommerce/pkg/kafka"
 	redis_db "app-ecommerce/pkg/redis"
 	"app-ecommerce/pkg/session"
 	"fmt"
@@ -22,8 +24,9 @@ func Run() {
 	defer func() {
 		db.UnInitDatabase()
 		redis_db.Uninit()
+		kafka.CloseProducer()
+		hub.CloseHub()
 	}()
-
 	Init()
 
 	app := route.InitRoute()
@@ -47,4 +50,10 @@ func Init() {
 
 	// init session storage
 	session.InitSessionStorage()
+
+	// init producer
+	kafka.InitProducer()
+
+	// init hub
+	hub.InitHub().Run()
 }

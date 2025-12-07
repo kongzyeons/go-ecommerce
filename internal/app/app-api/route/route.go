@@ -43,6 +43,7 @@ func registerPrivateHandlers(root fiber.Router) {
 	handlers.Register(
 		handler.NewProduct(),
 		handler.NewOrderHandler(),
+		handler.NewNotificationHandler(),
 	)
 	handlers.Init(root)
 }
